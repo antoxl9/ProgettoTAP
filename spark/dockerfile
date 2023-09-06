@@ -1,0 +1,9 @@
+FROM jupyter/pyspark-notebook:spark-3.1.1
+
+WORKDIR /app
+COPY ./code .
+RUN pip3 install spacy networkx dateparser matplotlib textacy pyspark numpy elasticsearch pandas requests datetime
+
+#RUN pip --no-cache-dir install -r requirements.txt
+#ENTRYPOINT ["spark-submit", "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2", "--master", "local[*]", "streaming.py"]
+
