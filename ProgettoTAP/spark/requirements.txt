@@ -1,0 +1,13 @@
+spacy
+networkx
+dateparser
+matplotlib
+textacy
+pyspark
+numpy
+pandas
+requests
+datetime
+networkx
+wikipediaapi
+dateparser
