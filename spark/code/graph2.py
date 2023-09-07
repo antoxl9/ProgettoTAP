@@ -175,21 +175,37 @@ with driver.session() as session:
     for node in nodes:
         cypher_queries.append(f"CREATE (:Node {{name: '{node}'}})")
 
+    cypher_query = "\n".join(cypher_queries)
+    session.run(cypher_query)
+
     # Create relationships
     for _, row in df.iterrows():
         entity = row['entity']
         object = row['object']
         relation = row['relation']['relation']
-        print(relation)
-        cypher_queries.append(
-            f"MATCH (n1:Node {{name: '{entity}'}}), (n2:Node {{name: '{object}'}}) "
-            f"WHIT CREATE (n1)-[:{relation}]->(n2)"
+        relation = str(relation).upper()
+
+        # cypher_queries.append(
+        #     f"MATCH (n1:Node {{name: '{entity}'}}), (n2:Node {{name: '{object}'}}) "
+        #     f"WITH CREATE (n1)-[r:ANTONIO]->(n2)"    #r:'{relation}'
+          
+        # )
+
+        #by saro cannavo
+        custom_rel_type = relation
+        query = (
+            "MATCH (n1:Node {name: $entity}), (n2:Node {name: $object})"
+            f"CREATE (n1)-[:{custom_rel_type} {{relation_property: $relation}}]->(n2)"
         )
+        session.run(query, entity=entity, object=object, relation=relation, custom_rel_type=custom_rel_type)
+
+
+
+        
+
 
     # Join all Cypher queries into a single string
-        cypher_query = "\n".join(cypher_queries)
-        session.run(cypher_query)
-
+       
         # session.run(f"MATCH (n1:Node {{name: '{entity}'}}), (n2:Node {{name: '{object}'}}) CREATE (n1)-[:{relation}]->(n2)")
         # session.run(f"MATCH (n1:Node {{name: '{entity}'}}), (n2:Node {{name: '{object}'}}) CREATE (n1)-[:RELATION {{relation: '{relation}'}}]->(n2)")
 
