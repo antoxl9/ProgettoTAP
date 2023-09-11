@@ -16,13 +16,21 @@ import numpy as np
 
 
 # Define a function to process the collected data
-def process_data(df):
+def process_data(df, batch_id):
+    print("batch id:" + str(batch_id))
+   # print("dataframe" + str(df))
     # Collect the DataFrame and extract the string value
     if df.count() > 0:
+       
         string_value = df.select("value").collect()[0][0]
+        print("string value" + str(string_value))
 
-    # Pass the string_value to your non-Spark code or perform any other operations
-    extract_graph(string_value)
+        if string_value != None:
+            extract_graph(string_value)
+        else:
+            print("None data, passed analysis")
+    else:
+        print("no data fetched")
 
 
 def extract_graph(txt):
@@ -39,15 +47,15 @@ def extract_graph(txt):
     lst_docs[i]
 
 
-    for token in lst_docs[i]:
-        print(token.text, "-->", "pos: "+token.pos_, "|", "dep: "+token.dep_, "")
+   # for token in lst_docs[i]:
+       # print(token.text, "-->", "pos: "+token.pos_, "|", "dep: "+token.dep_, "")
 
     from spacy import displacy
 
     displacy.render(lst_docs[i], style="dep", options={"distance":100})
 
-    for tag in lst_docs[i].ents:
-        print(tag.text, f"({tag.label_})") 
+    # for tag in lst_docs[i].ents:
+    #     print(tag.text, f"({tag.label_})") 
 
     displacy.render(lst_docs[i], style="ent")
 
@@ -69,10 +77,12 @@ def extract_graph(txt):
 
 
     ## create dataframe
+    import pandas as pd
+    import networkx as nx
     dtf = pd.DataFrame(dic)
-    print("ma")
-    print(dic)
-    print("ma")
+    # print("ma")
+    # print(dic)
+    # print("ma")
 
     ## example
     dtf[dtf["id"]==i]
@@ -98,7 +108,7 @@ def extract_graph(txt):
 
     ## example
     dtf_att[dtf_att["id"]==i]
-    print("le")
+    # print("le")
     doc = {"entity": dtf["entity"], "target": dtf["object"], "relation": dtf["relation"] }
     print(doc)
     ## create full graph
@@ -186,13 +196,23 @@ schema = StructType([
 ])
 
 # Cast the message received from kafka with the provided schema
-df = df.selectExpr("CAST(value AS STRING)") \
-    .select(from_json("value", schema).alias("data")) \
-    .select("data.*")
+# df = df.selectExpr("CAST(value AS STRING)") \
+#     .select(from_json("value", schema).alias("data")) \
+#     .select("data.*")
 
-query = df.writeStream \
-    .outputMode("append") \
-    .foreachBatch(lambda batch_df, batch_id: process_data(batch_df)) \
+
+# Parse the Kafka message key and value
+# df = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+
+# # Apply the schema to the value
+# df = df.select(from_json("value", schema).alias("data")).select("data.*")
+
+
+query = df.selectExpr("CAST(value AS STRING) AS value") \
+    .writeStream \
+    .outputMode("update") \
+    .foreachBatch(lambda batch_df, batch_id: process_data(batch_df, batch_id)) \
     .start()
+    
 
 query.awaitTermination()

@@ -124,15 +124,9 @@ services:
     # volumes:
     #   
     volumes:
-      
         - ./data:/data
-
     environment:
        -  NEO4J_AUTH=neo4j/password
-    
-    
-
-
     networks:
       - astrokg-network
 
@@ -145,6 +139,7 @@ services:
     depends_on:
       - kafkaserver
       - logstash
+      - neo4j
   
     restart: on-failure 
     networks:
