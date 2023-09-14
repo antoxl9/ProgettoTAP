@@ -25,7 +25,7 @@ import dateparser #1.1.7
 #python -m spacy download en_core_web_sm
 
 nlp = spacy.load("en_core_web_sm")
-doc = nlp("antonio e saro emettono suoni sgradevoli durante la copulazione")
+doc = nlp("test")
 
 # from text to a list of sentences
 lst_docs = [sent for sent in doc.sents]
