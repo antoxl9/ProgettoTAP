@@ -23,10 +23,10 @@ def process_data(df, batch_id):
     if df.count() > 0:
        
         string_value = df.select("value").collect()[0][0]
-        print("string value" + str(string_value))
+        print("string value" + str(string_value['message']))
 
         if string_value != None:
-            extract_graph(string_value)
+            extract_graph(string_value['message'])
         else:
             print("None data, passed analysis")
     else:
@@ -136,7 +136,7 @@ def extract_graph(txt):
         # Create nodes
         nodes = set(df['entity']).union(set(df['object']))
         for node in nodes:
-            session.run(f"CREATE (:Node {{name: '{node}'}})")
+            session.run(f"CREATE (:Node {{name: '{node}'}})")  #problema qui
 
         cypher_queries = []
 

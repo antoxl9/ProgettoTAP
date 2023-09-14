@@ -64,10 +64,10 @@ def get_trascrizione():
    iter=iter+1
    #print("sono arrivato qui", iter)
 
-   if iter == 10:  #fare in modo di renderlo automatico, e non creare copie
+   if iter == 9:  #fare in modo di renderlo automatico, e non creare copie
       iter = 0
 
-   return {"testo"+str(iter):risultato}
+   return str(risultato)
  
 
 
