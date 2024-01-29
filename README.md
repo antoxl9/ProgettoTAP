@@ -9,4 +9,3 @@ $ docker-compose up
 ```
 ## Useful links
 ## Credentials
-## test
